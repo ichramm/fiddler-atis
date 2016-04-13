@@ -203,10 +203,10 @@ namespace FiddlerATIS
 
             for (int i = 0; i < occurs; ++i)
             {
-                Hashtable res = ParseGroup(node, body, ref offset);
-                if (res.Count > 0)
+                Hashtable obj = ParseGroup(node, body, ref offset);
+                if (!IsEmpty(obj))
                 {
-                    result.Add(res);
+                    result.Add(obj);
                 }
             }
 
@@ -226,6 +226,11 @@ namespace FiddlerATIS
 
             if (TryExtractString(body, ref offset, length, out value))
             {
+                if (value == String.Empty)
+                {
+                    return value;
+                }
+
                 switch (node.Attributes["Tipo"].Value)
                 {
                     case "4":
