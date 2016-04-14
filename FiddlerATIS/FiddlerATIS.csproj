@@ -49,6 +49,7 @@
     <Compile Include="InspectorUtils.cs" />
     <Compile Include="Protocol.cs" />
     <Compile Include="BaseInspector.cs" />
+    <Compile Include="XmlStore.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

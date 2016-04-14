@@ -13,8 +13,6 @@ namespace FiddlerATIS
 {
     public static class Protocol
     {
-        static Dictionary<string, XmlDocument> xmlStorage = new Dictionary<string, XmlDocument>();
-
         private const string headerOpName = "C_ASSCC_V2";
         private const int headerLength = 604;
 
@@ -286,34 +284,9 @@ namespace FiddlerATIS
             return null;
         }
 
-        private static XmlDocument DownloadXml(string operationCode, string host)
-        {
-            string url = String.Format("http://{0}/ws/Mensajes/{1}.xml", host, operationCode);
-
-            using (var webClient = new WebClient())
-            {
-                webClient.Headers["X-Fiddler-Ignore"] = "true";
-                var xml = webClient.DownloadString(url);
-                var doc = new XmlDocument();
-                doc.LoadXml(xml);
-                return doc;
-            }
-        }
-
-        public static XmlDocument GetXml(string operationCode, Session session)
-        {
-            XmlDocument doc;
-            if (!xmlStorage.TryGetValue(operationCode, out doc))
-            {
-                doc = DownloadXml(operationCode, session.host);
-                xmlStorage[operationCode] = doc;
-            }
-            return doc;
-        }
-
         private static void ParseOperation(IDictionary target, string operationCode, Session session, byte[] body, ref int offset)
         {
-            XmlDocument doc = GetXml(operationCode, session);
+            XmlDocument doc = XmlStore.Instance.GetXml(session, operationCode);
             ParseGroup(target, doc.DocumentElement, body, ref offset);
         }
 

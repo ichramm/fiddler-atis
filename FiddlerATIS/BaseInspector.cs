@@ -1,5 +1,7 @@
 ﻿using Fiddler;
 using System;
+using System.IO;
+using System.Xml;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -52,7 +54,20 @@ namespace FiddlerATIS
 
         public void OpenXml()
         {
-            //string path = String.Format("{0}{1}.xml", CONFIG.GetPath("SafeTemp"), _instanceName);
+            string path = String.Format("{0}{1}.xml", CONFIG.GetPath("SafeTemp"), _instanceName);
+
+            var doc = XmlStore.Instance.GetXml(_session);
+            using (var stringWriter = new StringWriter())
+            {
+                var settings = new XmlWriterSettings();
+                settings.Indent = true;
+                using (var xmlTextWriter = XmlWriter.Create(stringWriter, settings))
+                {
+                    doc.WriteTo(xmlTextWriter);
+                    xmlTextWriter.Flush();
+                    InspectorUtils.OpenTextEditor(path, stringWriter.GetStringBuilder().ToString());
+                }
+            }
         }
 
         #region implemented abstract members of Inspector2
