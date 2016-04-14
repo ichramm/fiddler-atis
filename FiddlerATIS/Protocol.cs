@@ -2,14 +2,12 @@
 using Fiddler;
 using System.Net;
 using System.Xml;
-using System.Windows.Forms;
 using System.Collections.Generic;
-using Fiddler.WebFormats;
 using System.Collections;
-using System.Windows.Forms.VisualStyles;
 using System.Text;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
+using System.Collections.Specialized;
 
 namespace FiddlerATIS
 {
@@ -18,6 +16,7 @@ namespace FiddlerATIS
         static Dictionary<string, XmlDocument> xmlStorage = new Dictionary<string, XmlDocument>();
 
         private const string headerOpName = "C_ASSCC_V2";
+        private const int headerLength = 604;
 
         private static readonly string[] requiredHeaders = new string[]
         {
@@ -45,26 +44,24 @@ namespace FiddlerATIS
             return true;
         }
 
-        public static string SerializeRequest(Session session)
+        public static string SerializeRequest(Session session, bool showHeader)
         {
             if (session.RequestBody == null || session.RequestBody.Length == 0)
             {
                 return session.RequestHeaders.ToString(true, true, true);
             }
 
-            string operationCode = session.RequestHeaders["na_fis_code"];
-            return Serialize(operationCode, session, session.RequestBody);
+            return Serialize(session, session.RequestBody, showHeader);
         }
 
-        public static string SerializeRespone(Session session)
+        public static string SerializeRespone(Session session, bool showHeader)
         {
             if (session.ResponseBody == null || session.ResponseBody.Length == 0)
             {
                 return session.ResponseHeaders.ToString(true, true);
             }
-                
-            string operationCode = session.RequestHeaders["na_fis_code"];
-            return Serialize(operationCode, session, session.ResponseBody);
+
+            return Serialize(session, session.ResponseBody, showHeader);
         }
 
         private static string DecodeNumber(string value)
@@ -120,9 +117,9 @@ namespace FiddlerATIS
         {
             foreach (object value in ht.Values)
             {
-                if ((value as Hashtable) != null)
+                if ((value as OrderedDictionary) != null)
                 {
-                    if ((value as Hashtable).Count > 0)
+                    if ((value as OrderedDictionary).Count > 0)
                     {
                         return false;
                     }
@@ -188,9 +185,9 @@ namespace FiddlerATIS
             }
         }
 
-        private static Hashtable ParseGroup(XmlNode node, byte[] body, ref int offset)
+        private static OrderedDictionary ParseGroup(XmlNode node, byte[] body, ref int offset)
         {
-            var result = new Hashtable();
+            var result = new OrderedDictionary();
             ParseGroup(result, node, body, ref offset);
             return result;
         }
@@ -203,7 +200,7 @@ namespace FiddlerATIS
 
             for (int i = 0; i < occurs; ++i)
             {
-                Hashtable obj = ParseGroup(node, body, ref offset);
+                OrderedDictionary obj = ParseGroup(node, body, ref offset);
                 if (!IsEmpty(obj))
                 {
                     result.Add(obj);
@@ -235,6 +232,8 @@ namespace FiddlerATIS
                 {
                     case "4":
                         value = DecodeNumber(value);
+                        goto case "3";
+                    case "3": // assume it's the same as 4, without the encoding
                         try
                         {
                             return int.Parse(value);
@@ -287,42 +286,62 @@ namespace FiddlerATIS
             return null;
         }
 
-        private static void ParseOperation(IDictionary target, string operationCode, Session session, byte[] body, ref int offset)
+        private static XmlDocument DownloadXml(string operationCode, string host)
+        {
+            string url = String.Format("http://{0}/ws/Mensajes/{1}.xml", host, operationCode);
+
+            using (var webClient = new WebClient())
+            {
+                webClient.Headers["X-Fiddler-Ignore"] = "true";
+                var xml = webClient.DownloadString(url);
+                var doc = new XmlDocument();
+                doc.LoadXml(xml);
+                return doc;
+            }
+        }
+
+        public static XmlDocument GetXml(string operationCode, Session session)
         {
             XmlDocument doc;
-
             if (!xmlStorage.TryGetValue(operationCode, out doc))
             {
-                string url = String.Format("http://{0}/ws/Mensajes/{1}.xml", session.host, operationCode);
-
-                using (var webClient = new WebClient())
-                {
-                    webClient.Headers["X-Fiddler-Ignore"] = "true";
-                    var xml = webClient.DownloadString(url);
-                    doc = new XmlDocument();
-                    doc.LoadXml(xml);
-                    xmlStorage[operationCode] = doc;
-                }
+                doc = DownloadXml(operationCode, session.host);
+                xmlStorage[operationCode] = doc;
             }
+            return doc;
+        }
 
+        private static void ParseOperation(IDictionary target, string operationCode, Session session, byte[] body, ref int offset)
+        {
+            XmlDocument doc = GetXml(operationCode, session);
             ParseGroup(target, doc.DocumentElement, body, ref offset);
         }
 
-        private static Hashtable ParseOperation(string operationCode, Session session, byte[] body, ref int offset)
+        private static OrderedDictionary ParseOperation(string operationCode, Session session, byte[] body, ref int offset)
         {
-            var result = new Hashtable();
+            var result = new OrderedDictionary();
             ParseOperation(result, operationCode, session, body, ref offset);
             return result;
         }
 
-        private static string Serialize(string operationCode, Session session, byte[] body)
+        private static string Serialize(Session session, byte[] body, bool showHeader)
         {
             try
             {
-                int offset = 0;
-                Hashtable result = ParseOperation(headerOpName, session, body, ref offset);
-                ParseOperation(result, operationCode, session, body, ref offset);
+                var result = new OrderedDictionary();
 
+                int offset = 0;
+                if (showHeader)
+                {
+                    ParseOperation(result, headerOpName, session, body, ref offset);
+                }
+                else
+                {
+                    offset = headerLength;
+                }
+
+                string operationCode = session.RequestHeaders["na_fis_code"];
+                ParseOperation(result, operationCode, session, body, ref offset);
                 return JsonConvert.SerializeObject(result, Newtonsoft.Json.Formatting.Indented);
             }
             catch (Exception ex)

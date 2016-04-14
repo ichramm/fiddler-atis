@@ -1,8 +1,4 @@
 ﻿using Fiddler;
-using System;
-using System.Drawing;
-using System.Text;
-using System.Windows.Forms;
 
 namespace FiddlerATIS
 {
@@ -40,9 +36,9 @@ namespace FiddlerATIS
         {
         }
 
-        protected override string Serialize()
+        protected override string Serialize(bool showHeader)
         {
-            return Protocol.SerializeRespone(_session);
+            return Protocol.SerializeRespone(_session, showHeader);
         }
 
         #endregion

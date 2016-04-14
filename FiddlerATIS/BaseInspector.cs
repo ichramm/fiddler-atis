@@ -1,6 +1,5 @@
 ﻿using Fiddler;
 using System;
-using System.Text;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -33,12 +32,12 @@ namespace FiddlerATIS
         protected abstract void OnClear();
 
         // serialize to string
-        protected abstract string Serialize();
+        protected abstract string Serialize(bool showHeader);
 
         // might be override, might change my mind in the future
         protected virtual void UpdateDisplay()
         {
-            string text = _isAtisSession ? this.Serialize() : "Not an ATIS request.";
+            string text = _isAtisSession ? this.Serialize(this._view.miContextShowHeader.Checked) : "Not an ATIS request.";
             this._view.Reset();
             this._view.txtRaw.Text = text.Replace("\0", " ");
             this._view.btnSpawnTextEditor.Enabled = _isAtisSession;
@@ -48,9 +47,13 @@ namespace FiddlerATIS
         public void SpawnTextEditor()
         {
             string path = String.Format("{0}{1}.txt", CONFIG.GetPath("SafeTemp"), _instanceName);
-            InspectorUtils.OpenTextEditor(path, this.Serialize());
+            InspectorUtils.OpenTextEditor(path, this.Serialize(this._view.miContextShowHeader.Checked));
         }
 
+        public void OpenXml()
+        {
+            //string path = String.Format("{0}{1}.xml", CONFIG.GetPath("SafeTemp"), _instanceName);
+        }
 
         #region implemented abstract members of Inspector2
 
@@ -63,6 +66,8 @@ namespace FiddlerATIS
             o.Text = "ATIS";
             o.Controls.Add(this._view);
             o.Controls[0].Dock = DockStyle.Fill;
+
+            this._view.miContextShowHeader.CheckedChanged += new EventHandler(this.ContextShowHeaders_CheckedChanged);
         }
 
         public override int GetOrder()
@@ -141,6 +146,11 @@ namespace FiddlerATIS
         }
 
         #endregion
+
+        private void ContextShowHeaders_CheckedChanged(object sender, EventArgs e)
+        {
+            this.UpdateDisplay();
+        }
     }
 }
 
