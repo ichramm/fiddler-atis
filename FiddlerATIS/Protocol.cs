@@ -16,12 +16,11 @@ namespace FiddlerATIS
 
         private static readonly string[] requiredHeaders = new string[]
         {
-            "clienttype", 
-            "operation", 
-            "sequence", 
-            "na_fis_code", 
+            "clienttype",
+            "operation",
+            "na_fis_code",
             "fincode",
-            "bufferlength", 
+            "bufferlength",
             "applicationname"
         };
 
