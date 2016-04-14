@@ -1,13 +1,11 @@
 ﻿using System;
 using Fiddler;
-using System.Net;
 using System.Xml;
-using System.Collections.Generic;
-using System.Collections;
 using System.Text;
+using System.Collections;
 using System.Text.RegularExpressions;
-using Newtonsoft.Json;
 using System.Collections.Specialized;
+using Newtonsoft.Json;
 
 namespace FiddlerATIS
 {
@@ -129,9 +127,9 @@ namespace FiddlerATIS
                         return false;
                     }
                 }
-                else if (value is int)
+                else if (value is Int64)
                 {
-                    if ((int)value != 0)
+                    if ((Int64)value != 0)
                     {
                         return false;
                     }
@@ -208,7 +206,7 @@ namespace FiddlerATIS
             return result;
         }
 
-        private static object ParseValue(XmlNode node, byte[] body, ref int offset)
+        private static object ParseValue(XmlNode node, Array body, ref int offset)
         {
             if (node.Attributes["Redefine"] != null)
             {
@@ -234,7 +232,7 @@ namespace FiddlerATIS
                     case "3": // assume it's the same as 4, without the encoding
                         try
                         {
-                            return int.Parse(value);
+                            return Int64.Parse(value);
                         }
                         catch (Exception ex)
                         {
