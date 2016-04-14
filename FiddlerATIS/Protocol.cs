@@ -13,8 +13,8 @@ namespace FiddlerATIS
 {
     public static class Protocol
     {
-        private const string headerOpName = "C_ASSCC_V2";
-        private const int headerLength = 604;
+        private const string HEADER_OP_CODE = "C_ASSCC_V2";
+        private const int HEADER_LENGTH = 604;
 
         private static readonly string[] requiredHeaders = new string[]
         {
@@ -306,11 +306,11 @@ namespace FiddlerATIS
                 int offset = 0;
                 if (showHeader)
                 {
-                    ParseOperation(result, headerOpName, session, body, ref offset);
+                    ParseOperation(result, HEADER_OP_CODE, session, body, ref offset);
                 }
                 else
                 {
-                    offset = headerLength;
+                    offset = HEADER_LENGTH;
                 }
 
                 string operationCode = session.RequestHeaders["na_fis_code"];

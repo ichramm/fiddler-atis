@@ -24,12 +24,12 @@ namespace FiddlerATIS
 
         protected override HTTPHeaders Headers
         {
-            get { return _session.ResponseHeaders; }
+            get { return session_.ResponseHeaders; }
         }
 
         protected override byte[] Body
         {
-            get { return _session.ResponseBody; }
+            get { return session_.ResponseBody; }
         }
 
         protected override void OnClear()
@@ -38,7 +38,7 @@ namespace FiddlerATIS
 
         protected override string Serialize(bool showHeader)
         {
-            return Protocol.SerializeRespone(_session, showHeader);
+            return Protocol.SerializeRespone(session_, showHeader);
         }
 
         #endregion

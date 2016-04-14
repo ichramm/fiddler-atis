@@ -10,18 +10,18 @@ namespace FiddlerATIS
     public abstract class BaseInspector: Inspector2, IBaseInspector2
     {
         /* Filled with the name of the child class */
-        protected readonly string _instanceName;
+        protected readonly string instanceName_;
         /* The GUI */
-        protected ATISView _view;
+        protected ATISView view_;
         /* Indicates whether the current session is a valid atis session or not*/
-        protected bool _isAtisSession;
+        protected bool isAtisSession_;
         /* The current session, valid only when _isAtisSession is true */
-        protected Session _session;
+        protected Session session_;
         //protected Encoding _encoding = CONFIG.oHeaderEncoding;
 
         protected BaseInspector(string name)
         {
-            _instanceName = name;
+            instanceName_ = name;
         }
 
         // virtual in order to get the correct headers
@@ -39,24 +39,24 @@ namespace FiddlerATIS
         // might be override, might change my mind in the future
         protected virtual void UpdateDisplay()
         {
-            string text = _isAtisSession ? this.Serialize(this._view.miContextShowHeader.Checked) : "Not an ATIS request.";
-            this._view.Reset();
-            this._view.txtRaw.Text = text.Replace("\0", " ");
-            this._view.btnSpawnTextEditor.Enabled = _isAtisSession;
+            string text = isAtisSession_ ? this.Serialize(this.view_.miContextShowHeader.Checked) : "Not an ATIS request.";
+            this.view_.Reset();
+            this.view_.txtRaw.Text = text.Replace("\0", " ");
+            this.view_.btnSpawnTextEditor.Enabled = isAtisSession_;
         }
 
         // open request outside fiddler
         public void SpawnTextEditor()
         {
-            string path = String.Format("{0}{1}.txt", CONFIG.GetPath("SafeTemp"), _instanceName);
-            InspectorUtils.OpenTextEditor(path, this.Serialize(this._view.miContextShowHeader.Checked));
+            string path = String.Format("{0}{1}.txt", CONFIG.GetPath("SafeTemp"), instanceName_);
+            InspectorUtils.OpenTextEditor(path, this.Serialize(this.view_.miContextShowHeader.Checked));
         }
 
         public void OpenXml()
         {
-            string path = String.Format("{0}{1}.xml", CONFIG.GetPath("SafeTemp"), _instanceName);
+            string path = String.Format("{0}{1}.xml", CONFIG.GetPath("SafeTemp"), instanceName_);
 
-            var doc = XmlStore.Instance.GetXml(_session);
+            var doc = XmlStore.Instance.GetXml(session_);
             using (var stringWriter = new StringWriter())
             {
                 var settings = new XmlWriterSettings();
@@ -74,15 +74,15 @@ namespace FiddlerATIS
 
         public override void AddToTab(System.Windows.Forms.TabPage o)
         {
-            this._view = new ATISView(this);
-            this._view.txtRaw.ReadOnly = true;
-            this._view.txtRaw.BackColor = CONFIG.colorDisabledEdit;
+            this.view_ = new ATISView(this);
+            this.view_.txtRaw.ReadOnly = true;
+            this.view_.txtRaw.BackColor = CONFIG.colorDisabledEdit;
 
             o.Text = "ATIS";
-            o.Controls.Add(this._view);
+            o.Controls.Add(this.view_);
             o.Controls[0].Dock = DockStyle.Fill;
 
-            this._view.miContextShowHeader.CheckedChanged += new EventHandler(this.ContextShowHeaders_CheckedChanged);
+            this.view_.miContextShowHeader.CheckedChanged += new EventHandler(this.ContextShowHeaders_CheckedChanged);
         }
 
         public override int GetOrder()
@@ -98,10 +98,10 @@ namespace FiddlerATIS
         {
             this.Clear();
 
-            _isAtisSession = Protocol.IsAtisSession(oS); 
-            if (_isAtisSession)
+            isAtisSession_ = Protocol.IsAtisSession(oS); 
+            if (isAtisSession_)
             {
-                _session = oS;
+                session_ = oS;
             }
 
             this.UpdateDisplay();
@@ -109,9 +109,9 @@ namespace FiddlerATIS
 
         public override void SetFontSize(float flSizeInPoints)
         {
-            if (this._view != null)
+            if (this.view_ != null)
             {
-                this._view.txtRaw.Font = new Font(this._view.txtRaw.Font.FontFamily, flSizeInPoints);
+                this.view_.txtRaw.Font = new Font(this.view_.txtRaw.Font.FontFamily, flSizeInPoints);
             }
         }
 
@@ -122,9 +122,9 @@ namespace FiddlerATIS
         public void Clear()
         {
             this.OnClear();
-            this._session = null;
-            this._view.txtRaw.Clear();
-            this._view.btnSpawnTextEditor.Enabled = false;
+            this.session_ = null;
+            this.view_.txtRaw.Clear();
+            this.view_.btnSpawnTextEditor.Enabled = false;
         }
 
         public byte[] body
