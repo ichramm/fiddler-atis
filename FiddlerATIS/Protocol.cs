@@ -96,7 +96,7 @@ namespace FiddlerATIS
 
         private static bool TryExtractString(Array body, ref int offset, int length, out string result)
         {
-            if (offset + length >= body.Length)
+            if (offset + length > body.Length)
             {
                 offset = body.Length;
                 result = null;
