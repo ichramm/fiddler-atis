@@ -6,7 +6,7 @@ using System.Windows.Forms;
 
 namespace FiddlerATIS
 {
-    internal class CommonMethods
+    internal static class CommonMethods
     {
         //
         // Static Fields

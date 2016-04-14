@@ -7,7 +7,7 @@ using System.Windows.Forms;
 
 namespace FiddlerATIS
 {
-    public abstract class BaseInspector: Inspector2, IBaseInspector2
+    public abstract class ATISInspectorBase: Inspector2, IBaseInspector2
     {
         /* Filled with the name of the child class */
         protected readonly string instanceName_;
@@ -19,7 +19,7 @@ namespace FiddlerATIS
         protected Session session_;
         //protected Encoding _encoding = CONFIG.oHeaderEncoding;
 
-        protected BaseInspector(string name)
+        protected ATISInspectorBase(string name)
         {
             instanceName_ = name;
         }

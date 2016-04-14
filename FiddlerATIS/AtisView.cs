@@ -55,7 +55,7 @@ namespace FiddlerATIS
 
         private ToolStripMenuItem miContextPaste;
 
-        private BaseInspector m_owner;
+        private ATISInspectorBase m_owner;
 
         internal Button btnSpawnTextEditor;
 
@@ -72,7 +72,7 @@ namespace FiddlerATIS
         //
         // Constructors
         //
-        public ATISView(BaseInspector oOwner)
+        public ATISView(ATISInspectorBase oOwner)
         {
             this.InitializeComponent();
             this.txtRaw.Font = new Font("Lucida Console", CONFIG.flFontSize);
