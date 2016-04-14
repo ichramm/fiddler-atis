@@ -11,7 +11,7 @@ using System.Collections.Specialized;
 
 namespace FiddlerATIS
 {
-    public static class Protocol
+    internal static class Protocol
     {
         private const string HEADER_OP_CODE = "C_ASSCC_V2";
         private const int HEADER_LENGTH = 604;

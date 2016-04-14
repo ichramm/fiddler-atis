@@ -47,9 +47,9 @@
     <Compile Include="Protocol.cs" />
     <Compile Include="XmlStore.cs" />
     <Compile Include="AtisInspectorBase.cs" />
-    <Compile Include="AtisRequest.cs" />
-    <Compile Include="AtisResponse.cs" />
     <Compile Include="AtisView.cs" />
+    <Compile Include="AtisRequestInspector.cs" />
+    <Compile Include="AtisResponseInspector.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

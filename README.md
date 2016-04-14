@@ -11,7 +11,7 @@
 1. On Fiddler go to `Rules -> Customize Rules` (or open the file `Documents/Fiddler/Scripts/CustomRules.js`)
 2. Add the following code to the method `OnBeforeRequest`
 ```cs
-if (oSession.oRequest.headers.Exists("X-Fiddler-Ignore")) 
+if (oSession.oRequest.headers.Exists("X-Fiddler-Ignore"))
 {
     oSession["ui-hide"] = "true";
 }

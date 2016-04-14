@@ -2,9 +2,9 @@
 
 namespace FiddlerATIS
 {
-    public sealed class ATISResponse : ATISInspectorBase, IResponseInspector2
+    public sealed class AtisResponseInspector : ATISInspectorBase, IResponseInspector2
     {
-        public ATISResponse()
+        public AtisResponseInspector()
             : base("ATISResponse")
         {
         }

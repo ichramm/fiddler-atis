@@ -9,7 +9,7 @@ using System.Windows.Forms;
 
 namespace FiddlerATIS
 {
-    public class XmlStore
+    internal class XmlStore
     {
         public static readonly XmlStore Instance = new XmlStore();
 

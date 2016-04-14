@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 
 namespace FiddlerATIS
 {
-    class RichTextBox5 : RichTextBox
+    internal class RichTextBox5 : RichTextBox
     {
         //
         // Properties
