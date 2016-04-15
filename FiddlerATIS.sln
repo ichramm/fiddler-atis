@@ -6,6 +6,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2A2AD9CF-AB2D-4DCD-AA2B-364A13044501}"
 	ProjectSection(SolutionItems) = preProject
 		README.md = README.md
+		ATISTranslations.json = ATISTranslations.json
 	EndProjectSection
 EndProject
 Global

@@ -50,6 +50,7 @@
     <Compile Include="AtisView.cs" />
     <Compile Include="AtisRequestInspector.cs" />
     <Compile Include="AtisResponseInspector.cs" />
+    <Compile Include="Translations.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

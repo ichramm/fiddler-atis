@@ -149,6 +149,13 @@ namespace FiddlerATIS
             return true;
         }
 
+        private static string FormatFieldName(XmlNode node)
+        {
+            var name = node.Attributes["Nombre"].Value;
+            var translation = Translations.Instance[name];
+            return translation != null ? String.Format("{0} ({1})", name, translation) : name;
+        }
+
         private static void ParseGroup(IDictionary target, XmlNode node, byte[] body, ref int offset)
         {
             foreach (XmlNode childNode in node.ChildNodes)
@@ -163,18 +170,18 @@ namespace FiddlerATIS
                     object value = ParseValue(childNode, body, ref offset);
                     if (value != null)
                     {
-                        target.Add(childNode.Attributes["Nombre"].Value, value);
+                        target.Add(FormatFieldName(childNode), value);
                     }
                 }
                 else if (childNode.Name == "NA_GRUPO")
                 {
                     if (childNode.Attributes["Occurs"] != null)
                     {
-                        target.Add(childNode.Attributes["Nombre"].Value, ParseArray(childNode, body, ref offset));
+                        target.Add(FormatFieldName(childNode), ParseArray(childNode, body, ref offset));
                     }
                     else
                     {
-                        target.Add(childNode.Attributes["Nombre"].Value, ParseGroup(childNode, body, ref offset));
+                        target.Add(FormatFieldName(childNode), ParseGroup(childNode, body, ref offset));
                     }
                 }
             }
